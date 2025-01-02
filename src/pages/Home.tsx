@@ -13,7 +13,6 @@ const Home: React.FC = () => {
     date: [null, null],
   });
 
-  const [dateRange, setDateRange] = useState([null, null]);
   const [isCalendarOpen, setCalendarOpen] = useState(true);
 
   const formatDate = (date: Date) => {
@@ -31,6 +30,7 @@ const Home: React.FC = () => {
 
   const handleDateChange = (date: Array<Date | null>) => {
     setSearchQuery({ ...searchQuery, date });
+    if (date[1] !== null) setCalendarOpen(false);
   };
   const handleClearDate = () => {
     setSearchQuery({ ...searchQuery, date: [null, null] });
@@ -98,6 +98,7 @@ const Home: React.FC = () => {
           {isCalendarOpen && (
             <DatePicker
               selectsRange={true}
+              onBlur={() => setCalendarOpen(false)}
               name="date"
               dateFormat="yyyy/MM/dd"
               startDate={searchQuery.date[0]}
