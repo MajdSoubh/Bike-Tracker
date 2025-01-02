@@ -1,9 +1,10 @@
 import React from "react";
-import "./assets/App.css";
-import Home from "./components/Home";
-import MainLayout from "./layouts/MainLayout";
-
 import { BrowserRouter, Routes, Route } from "react-router";
+import "./assets/App.css";
+import Home from "./pages/Home";
+import MainLayout from "./layouts/MainLayout";
+import About from "./pages/About";
+import Help from "./pages/Help";
 
 const App: React.FC = () => {
   return (
@@ -11,6 +12,8 @@ const App: React.FC = () => {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/help" element={<Help />} />
+          <Route path="/about" element={<About />} />
         </Route>
       </Routes>
     </BrowserRouter>
