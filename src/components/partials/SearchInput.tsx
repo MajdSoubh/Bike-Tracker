@@ -10,7 +10,6 @@ interface SearchInputProps {
   onChange: (
     ev: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
   ) => void;
-  align?: "top" | "side";
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
