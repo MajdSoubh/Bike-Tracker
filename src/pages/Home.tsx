@@ -180,7 +180,12 @@ const Home: React.FC = () => {
           />
           <div className="relative">
             <button
-              className="bg-[#E8EEF2]  min-h-[30px] flex items-center px-2 py-1 text-sm rounded-lg"
+              className={
+                "bg-[#E8EEF2]  min-h-[30px] flex items-center px-2 py-1 text-sm rounded-lg " +
+                (isCalendarOpen || dateRange[0]
+                  ? "shadow ring-1 ring-slate-300"
+                  : "")
+              }
               onClick={() => setCalendarOpen(!isCalendarOpen)}
             >
               {dateRange[0] && (
