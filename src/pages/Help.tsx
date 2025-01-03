@@ -56,7 +56,7 @@ const Help: React.FC = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold text-center text-black mb-8">
+      <h1 className="text-3xl font-bold text-center uppercase text-black mb-8">
         Help & FAQs
       </h1>
       <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
