@@ -168,24 +168,13 @@ const Home: React.FC = () => {
           value={query.text}
           onChange={handleQueryChange}
         />
-        <div className="flex items-center mt-4 gap-4">
-          <Select
-            value={query.perPage}
-            name="perPage"
-            onChange={handleQueryChange}
-            options={[
-              { value: 3, label: "3" },
-              { value: 10, label: "10" },
-              { value: 20, label: "20" },
-              { value: 30, label: "30" },
-            ]}
-          />
+        <div className="flex items-center justify-between mt-4 gap-4">
           <div className="relative">
             <button
               className={
-                "bg-[#E8EEF2]  min-h-[30px] flex items-center px-2 py-1 text-sm rounded-lg transition-all " +
+                " min-h-[30px] flex items-center px-2 py-1 text-sm  bg-slate-500 text-white rounded-md hover:bg-slate-600 transition-all " +
                 (isCalendarOpen || dateRange[0]
-                  ? "shadow ring-1 ring-slate-300"
+                  ? "bg-slate-600 ring-2 ring-slate-300"
                   : "")
               }
               onClick={() => setCalendarOpen(!isCalendarOpen)}
@@ -212,6 +201,20 @@ const Home: React.FC = () => {
                 onChange={handleDateChange}
               />
             )}
+          </div>
+          <div>
+            <Select
+              value={query.perPage}
+              name="perPage"
+              label="Items per page"
+              onChange={handleQueryChange}
+              options={[
+                { value: 3, label: "3" },
+                { value: 10, label: "10" },
+                { value: 20, label: "20" },
+                { value: 30, label: "30" },
+              ]}
+            />
           </div>
         </div>
       </div>
