@@ -36,7 +36,7 @@ const Cases: React.FC<CasesProps> = ({ data = [], loading = false }) => {
   return (
     <div className="flex flex-col gap-4">
       {loading ? (
-        Array.from({ length: 3 }).map((_, index) => (
+        Array.from({ length: 2 }).map((_, index) => (
           <Case key={`skeleton-${index}`} loading />
         ))
       ) : data.length > 0 ? (
