@@ -7,9 +7,7 @@ interface SearchInputProps {
   className?: string;
   error?: string;
   label?: string;
-  onChange: (
-    ev: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
-  ) => void;
+  onChange: (ev: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({

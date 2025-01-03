@@ -1,15 +1,15 @@
 import React, { ChangeEvent } from "react";
 
 interface Option {
-  value: string; // The actual value of the option
-  label?: string; // Optional label to display for the option
+  value: number;
+  label?: string;
 }
 
 interface SelectProps {
   name: string;
-  value: string;
+  value: number;
   className?: string;
-  options: Option[]; // Array of options for the dropdown
+  options: Option[];
   onChange: (ev: ChangeEvent<HTMLSelectElement>) => void; // Correct type for select events
 }
 
@@ -34,8 +34,7 @@ const Select: React.FC<SelectProps> = ({
     >
       {options.map((option) => (
         <option key={option.value} value={option.value}>
-          {option.label || option.value}{" "}
-          {/* Use label if provided, fallback to value */}
+          {option.label || option.value}
         </option>
       ))}
     </select>
