@@ -80,19 +80,20 @@ const Home: React.FC = () => {
     });
 
     setFilteredCases(filtered);
-    setCasesCount({ count: filtered.length, loading: false });
   };
 
   const fetchCasesCount = async () => {
     setCasesCount({ count: 0, loading: true });
-    const params = new URLSearchParams({
-      query: query.text,
-      per_page: query.perPage.toString(),
-    }).toString();
+    const params = new URLSearchParams();
+    if (query.text) {
+      params.append("query", query.text);
+    }
+
+    const queryString = params.toString();
 
     try {
       const response = await fetch(
-        `https://bikeindex.org:443/api/v3/search/count?${params}`
+        `https://bikeindex.org:443/api/v3/search/count?${queryString}`
       );
       const result = await response.json();
       setCasesCount({
@@ -112,15 +113,25 @@ const Home: React.FC = () => {
 
   const fetchCases = async () => {
     setCases({ items: [], loading: true });
-    const params = new URLSearchParams({
-      query: query.text,
-      per_page: query.perPage.toString(),
-      page: query.currentPage.toString(),
-    }).toString();
+    const params = new URLSearchParams();
+
+    if (query.text) {
+      params.append("query", query.text);
+    }
+
+    if (query.perPage) {
+      params.append("per_page", query.perPage.toString());
+    }
+
+    if (query.currentPage) {
+      params.append("page", query.currentPage.toString());
+    }
+
+    const queryString = params.toString();
 
     try {
       const response = await fetch(
-        `https://bikeindex.org:443/api/v3/search?${params}`
+        `https://bikeindex.org:443/api/v3/search?${queryString}`
       );
       const result = await response.json();
       const normalizedCases = result.bikes.map((item: any) => ({
