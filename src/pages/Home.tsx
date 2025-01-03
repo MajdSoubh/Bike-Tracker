@@ -22,7 +22,7 @@ interface CasesState {
 const Home: React.FC = () => {
   const [query, setQuery] = useState<Query>({
     text: "",
-    perPage: 3,
+    perPage: 10,
     currentPage: 1,
   });
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
