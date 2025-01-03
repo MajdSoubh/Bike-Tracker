@@ -29,7 +29,7 @@ const Case: React.FC<CaseProps> = ({
 }) => {
   let navigate = useNavigate();
   return (
-    <Card>
+    <Card className="transition-all hover:ring-slate-100 hover:ring-4 ">
       <div
         onClick={() => navigate(`/case/${id}`)}
         className="flex flex-col sm:flex-row justify-between gap-4 w-full cursor-pointer"
@@ -82,24 +82,33 @@ const Case: React.FC<CaseProps> = ({
               <h3 className="text-md max-sm:text-center font-bold">{title}</h3>
               {/* Meta Data */}
               <div className="block sm:flex justify-between gap-2 mt-2">
-                {(description || stolenLocation) && (
+                {stolenLocation && (
                   <div className="block sm:flex flex-col items-start gap-2">
-                    {stolenLocation && (
-                      <div>Stolen Location: {stolenLocation}</div>
-                    )}
+                    <div>
+                      <span className="font-bold">Stolen Location:</span>{" "}
+                      {stolenLocation}
+                    </div>
                   </div>
                 )}
                 {(stolenDate || serial || primaryColor.length > 0) && (
                   <div className="block sm:flex flex-col items-start gap-2">
                     {stolenDate && (
                       <div>
-                        Stolen Date: {format(stolenDate, "yyyy-MM-dd hh:mm aa")}
+                        <span className="font-bold">Stolen Date:</span>{" "}
+                        {format(stolenDate, "yyyy-MM-dd hh:mm aa")}
                       </div>
                     )}
-                    {serial && <div>Serial: {serial}</div>}
+                    {serial && (
+                      <div>
+                        <span className="font-bold">Serial: &nbsp;</span>
+                        {serial}
+                      </div>
+                    )}
                     {primaryColor.length > 0 && (
                       <div className="flex flex-wrap">
-                        <span>Primary Colors:&nbsp;</span>
+                        <span className="font-bold">
+                          Primary Colors: &nbsp;
+                        </span>
                         {primaryColor.map((color) => (
                           <span key={color + Math.random() * 100}>
                             {color},&nbsp;
