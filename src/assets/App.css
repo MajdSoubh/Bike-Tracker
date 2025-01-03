@@ -8,10 +8,15 @@
   box-sizing: border-box;
   font-family: "Montserrat", serif;
 }
+body {
+  position: relative;
+  background-color: #f3f3f34d !important;
+}
 
 /* Date Picker */
 .react-datepicker {
   position: absolute !important;
+  z-index: 20;
   top: 120%;
   left: 0;
 }
