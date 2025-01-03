@@ -57,18 +57,30 @@ const Home: React.FC = () => {
   };
 
   const filterCasesByDate = () => {
-    const filtered = cases.items.filter((item) => {
-      if (!dateRange[0]) return true;
-      if (!item.date_stolen) return false;
+    const { items } = cases;
 
-      const itemDate = new Date(item.date_stolen).valueOf();
-      const startDate = dateRange[0]?.valueOf() || 0;
-      const endDate = (dateRange[1]?.valueOf() || 0) + 86340000;
-
-      return itemDate >= startDate && itemDate <= endDate;
+    const filtered = items.filter((item) => {
+      if (dateRange[0] === null) return true;
+      if (item.date_stolen === null) return false;
+      if (
+        dateRange[0] &&
+        item.date_stolen &&
+        item.date_stolen.valueOf() < dateRange[0].valueOf()
+      ) {
+        return false;
+      }
+      if (
+        dateRange[1] &&
+        item.date_stolen &&
+        item.date_stolen.valueOf() > dateRange[1].valueOf() + 86340000
+      ) {
+        return false;
+      }
+      return true;
     });
 
     setFilteredCases(filtered);
+    setCasesCount({ count: filtered.length, loading: false });
   };
 
   const fetchCasesCount = async () => {
@@ -168,7 +180,7 @@ const Home: React.FC = () => {
           />
           <div className="relative">
             <button
-              className="bg-[#E8EEF2] min-h-[30px] flex items-center px-2 py-1 rounded-lg"
+              className="bg-[#E8EEF2]  min-h-[30px] flex items-center px-2 py-1 text-sm rounded-lg"
               onClick={() => setCalendarOpen(!isCalendarOpen)}
             >
               {dateRange[0] && (
