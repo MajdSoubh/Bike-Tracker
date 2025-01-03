@@ -1,114 +1,218 @@
-import React, { useState, ChangeEvent, useRef } from "react";
+import React, { useState, ChangeEvent, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import SearchInput from "../components/partials/SearchInput";
-interface SearchQuery {
+import Cases from "../components/Cases";
+import { format } from "date-fns";
+import { notifications } from "@mantine/notifications";
+import Select from "../components/partials/Select";
+import Pagination from "../components/partials/Pagination";
+
+interface Query {
   text: string;
-  date: Array<Date | null>;
+  perPage: number;
+  currentPage: number;
+}
+
+interface CasesState {
+  items: any[];
+  loading: boolean;
 }
 
 const Home: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState<SearchQuery>({
+  const [query, setQuery] = useState<Query>({
     text: "",
-    date: [null, null],
+    perPage: 3,
+    currentPage: 1,
   });
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
+    null,
+    null,
+  ]);
+  const [isCalendarOpen, setCalendarOpen] = useState(false);
+  const [cases, setCases] = useState<CasesState>({ items: [], loading: true });
+  const [casesCount, setCasesCount] = useState<{
+    count: number;
+    loading: boolean;
+  }>({
+    count: 0,
+    loading: true,
+  });
+  const [filteredCases, setFilteredCases] = useState<any[]>([]);
 
-  const [isCalendarOpen, setCalendarOpen] = useState(true);
-
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  const handleChange = (
-    ev: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>
+  const handleQueryChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setSearchQuery({ ...searchQuery, [ev.target.name]: ev.target.value });
+    setQuery({ ...query, [event.target.name]: event.target.value });
   };
 
-  const handleDateChange = (date: Array<Date | null>) => {
-    setSearchQuery({ ...searchQuery, date });
-    if (date[1] !== null) setCalendarOpen(false);
+  const handleDateChange = (dates: [Date | null, Date | null]) => {
+    setDateRange(dates);
+    if (dates[1]) setCalendarOpen(false);
   };
-  const handleClearDate = () => {
-    setSearchQuery({ ...searchQuery, date: [null, null] });
+
+  const clearDateRange = (event: React.MouseEvent<HTMLSpanElement>) => {
+    setDateRange([null, null]);
+    event.stopPropagation();
   };
+
+  const filterCasesByDate = () => {
+    const filtered = cases.items.filter((item) => {
+      if (!dateRange[0]) return true;
+      if (!item.date_stolen) return false;
+
+      const itemDate = new Date(item.date_stolen).valueOf();
+      const startDate = dateRange[0]?.valueOf() || 0;
+      const endDate = (dateRange[1]?.valueOf() || 0) + 86340000;
+
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+
+    setFilteredCases(filtered);
+  };
+
+  const fetchCasesCount = async () => {
+    setCasesCount({ count: 0, loading: true });
+    const params = new URLSearchParams({
+      query: query.text,
+      per_page: query.perPage.toString(),
+    }).toString();
+
+    try {
+      const response = await fetch(
+        `https://bikeindex.org:443/api/v3/search/count?${params}`
+      );
+      const result = await response.json();
+      setCasesCount({
+        count: result.non + result.stolen + result.proximity,
+        loading: false,
+      });
+    } catch {
+      notifications.show({
+        message: "Failed to fetch the case count. Please try again later.",
+        position: "top-center",
+        color: "red",
+        autoClose: 2000,
+      });
+      setCasesCount({ count: 0, loading: false });
+    }
+  };
+
+  const fetchCases = async () => {
+    setCases({ items: [], loading: true });
+    const params = new URLSearchParams({
+      query: query.text,
+      per_page: query.perPage.toString(),
+      page: query.currentPage.toString(),
+    }).toString();
+
+    try {
+      const response = await fetch(
+        `https://bikeindex.org:443/api/v3/search?${params}`
+      );
+      const result = await response.json();
+      const normalizedCases = result.bikes.map((item: any) => ({
+        ...item,
+        date_stolen:
+          item.date_stolen?.toString().length === 10
+            ? new Date(item.date_stolen * 1000)
+            : new Date(item.date_stolen),
+      }));
+      setCases({ items: normalizedCases, loading: false });
+      setFilteredCases(normalizedCases);
+    } catch {
+      notifications.show({
+        message: "Failed to fetch the case data. Please try again later.",
+        position: "top-center",
+        color: "red",
+        autoClose: 2000,
+      });
+      setCases({ items: [], loading: false });
+    }
+  };
+
+  useEffect(() => {
+    filterCasesByDate();
+  }, [dateRange, cases.items]);
+
+  useEffect(() => {
+    const delayFetch = setTimeout(() => {
+      fetchCases();
+      fetchCasesCount();
+    }, 500);
+    return () => clearTimeout(delayFetch);
+  }, [query]);
+
   return (
-    <div className="pt-12 pb-8 w-max px-8 mx-auto">
+    <div className="pt-12 pb-8 px-4 md:px-8 md:w-[768px] lg:w-[960px] mx-auto">
       <h1 className="text-3xl uppercase">Search for all bikes</h1>
+
       {/* Search Panel */}
-      <div className="mt-8 ">
+      <div className="mt-8">
         <SearchInput
           name="text"
-          className="max-md:w-full w-[800px]"
+          className="w-full"
           placeholder="Search cases"
-          value={searchQuery.text}
-          onChange={handleChange}
+          value={query.text}
+          onChange={handleQueryChange}
         />
-
-        <div className="relative">
-          <button
-            className="bg-[#E8EEF2] relative flex items-center justify-center text-black-100 font-medium text-xs p-2 mt-4 rounded-lg"
-            onClick={() => {
-              setCalendarOpen(!isCalendarOpen);
-            }}
-          >
-            {searchQuery.date[0] && (
-              <span>{formatDate(searchQuery.date[0])}</span>
+        <div className="flex items-center mt-4 gap-4">
+          <Select
+            value={query.perPage}
+            name="perPage"
+            onChange={handleQueryChange}
+            options={[
+              { value: 3, label: "3" },
+              { value: 10, label: "10" },
+            ]}
+          />
+          <div className="relative">
+            <button
+              className="bg-[#E8EEF2] min-h-[30px] flex items-center px-2 py-1 rounded-lg"
+              onClick={() => setCalendarOpen(!isCalendarOpen)}
+            >
+              {dateRange[0] && (
+                <span>{format(dateRange[0], "yyyy-MM-dd")}</span>
+              )}
+              {dateRange[1] && (
+                <span>&nbsp;-&nbsp;{format(dateRange[1], "yyyy-MM-dd")}</span>
+              )}
+              {dateRange[0] && (
+                <span className="ml-1" onClick={clearDateRange}>
+                  &#x2715;
+                </span>
+              )}
+              {!dateRange[0] && <span>Select Date Range</span>}
+            </button>
+            {isCalendarOpen && (
+              <DatePicker
+                selectsRange
+                inline
+                startDate={dateRange[0]}
+                endDate={dateRange[1]}
+                onChange={handleDateChange}
+              />
             )}
-            {searchQuery.date[1] && (
-              <span>&nbsp;- &nbsp;{formatDate(searchQuery.date[1])}</span>
-            )}
-            {searchQuery.date[0] && (
-              <span className="ml-1" onClick={handleClearDate}>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  width="20px"
-                  className="hover:bg-black group rounded-full inline-block transition-all"
-                  height="20px"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                  <g
-                    id="SVGRepo_tracerCarrier"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <g id="Menu / Close_SM">
-                      <path
-                        id="Vector"
-                        className="group-hover:stroke-white transition-all"
-                        d="M16 16L12 12M12 12L8 8M12 12L16 8M12 12L8 16"
-                        stroke="#000000"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      ></path>
-                    </g>
-                  </g>
-                </svg>
-              </span>
-            )}
-            {!searchQuery.date[0] && <span>Select Date Range</span>}
-          </button>
-          {isCalendarOpen && (
-            <DatePicker
-              selectsRange={true}
-              onBlur={() => setCalendarOpen(false)}
-              name="date"
-              dateFormat="yyyy/MM/dd"
-              startDate={searchQuery.date[0]}
-              endDate={searchQuery.date[1]}
-              onChange={handleDateChange}
-              isClearable
-              inline
-            />
-          )}
+          </div>
         </div>
+      </div>
+
+      {/* Cases */}
+      <div className="mt-8">
+        <Cases data={filteredCases} loading={cases.loading} />
+      </div>
+
+      {/* Pagination */}
+      <div className="mt-4">
+        <Pagination
+          totalItems={casesCount.count}
+          itemsPerPage={query.perPage}
+          currentpage={query.currentPage}
+          onPageChange={(page) =>
+            setQuery((prev) => ({ ...prev, currentPage: page }))
+          }
+          loading={casesCount.loading}
+        />
       </div>
     </div>
   );
