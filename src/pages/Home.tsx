@@ -200,6 +200,11 @@ const Home: React.FC = () => {
       {/* Cases */}
       <div className="mt-8">
         <Cases data={filteredCases} loading={cases.loading} />
+        {filteredCases.length > 0 && (
+          <span className="text-xs ms-auto block w-fit mt-2 text-slate-600">
+            Showing {query.perPage} from {casesCount.count} entries
+          </span>
+        )}
       </div>
 
       {/* Pagination */}
