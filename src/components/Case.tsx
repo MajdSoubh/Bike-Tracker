@@ -2,8 +2,10 @@ import React from "react";
 import { Skeleton } from "@mantine/core";
 import { format } from "date-fns";
 import Card from "./partials/Card";
+import { useNavigate } from "react-router";
 
 interface CaseProps {
+  id?: number;
   title?: string;
   description?: string | null;
   stolenDate?: number | null;
@@ -15,6 +17,7 @@ interface CaseProps {
 }
 
 const Case: React.FC<CaseProps> = ({
+  id,
   title,
   description = null,
   stolenDate = null,
@@ -24,9 +27,13 @@ const Case: React.FC<CaseProps> = ({
   imageURL = null,
   loading = false,
 }) => {
+  let navigate = useNavigate();
   return (
     <Card>
-      <div className="flex flex-col sm:flex-row justify-between gap-4 w-full">
+      <div
+        onClick={() => navigate(`/case/${id}`)}
+        className="flex flex-col sm:flex-row justify-between gap-4 w-full cursor-pointer"
+      >
         {/* Image */}
         <div className="flex items-center order-1 self-center sm:self-start rounded-xl overflow-hidden w-[186px] min-w-[186px] h-[186px]">
           {!loading && (

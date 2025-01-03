@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import MainLayout from "./layouts/MainLayout";
 import About from "./pages/About";
 import Help from "./pages/Help";
+import CaseDetails from "./pages/CaseDetails";
 
 const App: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/help" element={<Help />} />
           <Route path="/about" element={<About />} />
+          <Route path="/case/:id" element={<CaseDetails />} />
         </Route>
       </Routes>
     </BrowserRouter>

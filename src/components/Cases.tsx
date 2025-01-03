@@ -43,6 +43,7 @@ const Cases: React.FC<CasesProps> = ({ data = [], loading = false }) => {
         data.map((bike) => (
           <Case
             key={bike.id}
+            id={bike.id}
             title={bike.title}
             description={bike.description}
             stolenDate={bike.date_stolen}
