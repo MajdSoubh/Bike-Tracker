@@ -22,8 +22,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
   return (
     <div
       className={
-        "bg-[#E8EEF2] px-4 py-3 rounded-2xl flex justify-center gap-3 items-center " +
-        className
+        "relative  flex justify-center gap-3 items-center " + className
       }
     >
       <svg
@@ -31,6 +30,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         width="25px"
         height="25px"
         version="1.1"
+        className="absolute left-[10px]"
         xmlns="http://www.w3.org/2000/svg"
         fill="#000000"
       >
@@ -68,7 +68,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         name={name}
         value={value}
         placeholder={placeholder}
-        className={`w-full bg-transparent outline-none border-none text-[#546E96] text-sm placeholder:text-black/30  `}
+        className={`w-full bg-[#E8EEF2]  rounded-2xl px-4 ps-14 py-3 outline-none border-none text-[#546E96] text-sm placeholder:text-black/30 transition-all focus:ring-1 focus:shadow ring-slate-300 `}
         aria-invalid={!!error}
         onChange={onChange}
         {...props}

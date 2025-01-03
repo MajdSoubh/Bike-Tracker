@@ -28,7 +28,7 @@ const Select: React.FC<SelectProps> = ({
       value={value}
       {...props}
       className={
-        "bg-[#E8EEF2] rounded-md py-1 px-2 outline-none border-none text-[#546E96] text-sm placeholder:text-black/30 " +
+        "bg-[#E8EEF2] rounded-md py-1 px-2 outline-none border-none text-[#546E96] text-sm placeholder:text-black/30 transition-all focus:ring-1 focus:shadow ring-slate-300 " +
         className
       }
     >
