@@ -162,6 +162,7 @@ const Home: React.FC = () => {
       {/* Search Panel */}
       <div className="mt-8">
         <SearchInput
+          loading={cases.loading}
           name="text"
           className="w-full"
           placeholder="Search cases"
